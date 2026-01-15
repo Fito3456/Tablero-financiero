@@ -1,6 +1,6 @@
 import React from 'react';
 import { Target } from 'lucide-react';
-import { formatCLP, calcularInteres } from '../utils/storage';
+import { formatCLP, calcularInteres } from './Utils/storage';
 
 const VistaProyeccion = ({ aportes, tasas, gastosUniversidad }) => {
   const calcularProyeccion = () => {
