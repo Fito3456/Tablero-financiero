@@ -12,7 +12,9 @@ import VistaGastos from './components/VistaGastos';
 import VistaProyeccion from './components/VistaProyeccion';
 import VistaCronograma from './components/VistaCronograma';
 import VistaTasas from './components/VistaTasas';
-import { storage, calcularInteres } from "./utils/storage";
+
+// Importar utilidades (SOLO UNA VEZ)
+import { storage, calcularInteres } from './utils/storage';
 
 function App() {
   // Estado de autenticación
