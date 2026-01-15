@@ -14,7 +14,7 @@ import VistaCronograma from './Components/VistaCronograma';
 import VistaTasas from './Components/VistaTasas';
 
 // Importar utilidades (SOLO UNA VEZ)
-import { storage, calcularInteres } from './utils/storage';
+import { storage, calcularInteres } from './Utils/storage';
 
 function App() {
   // Estado de autenticación
