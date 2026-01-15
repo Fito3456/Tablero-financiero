@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Edit2, Save } from 'lucide-react';
-import { storage, formatCLP } from './Utils/storage';
+import { storage, formatCLP } from '../Utils/storage';
 
 const VistaCronograma = ({ aportes, setAportes, mesesCompletados, setMesesCompletados }) => {
   const [modoEdicion, setModoEdicion] = useState(false);

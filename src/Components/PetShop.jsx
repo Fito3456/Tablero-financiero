@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Package } from 'lucide-react';
-import { storage, formatCLP } from './Utils/storage';
+import { storage, formatCLP } from '../Utils/storage';
 
 const PetShop = () => {
   const [cantidad, setCantidad] = useState(1);

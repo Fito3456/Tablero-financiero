@@ -1,6 +1,6 @@
 import React from 'react';
 import { TrendingUp, PiggyBank, Wallet, DollarSign, Edit2 } from 'lucide-react';
-import { formatCLP } from './Utils/storage';
+import { formatCLP } from '../Utils/storage';
 
 const VistaActivos = ({ totales, tasas, onEditarTasas }) => {
   const activos = [

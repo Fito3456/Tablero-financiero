@@ -1,6 +1,6 @@
 import React from 'react';
 import { Edit2 } from 'lucide-react';
-import { storage } from './Utils/storage';
+import { storage } from '../Utils/storage';
 
 const VistaTasas = ({ tasas, setTasas }) => {
   const campos = [

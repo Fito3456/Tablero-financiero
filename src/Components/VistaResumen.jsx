@@ -1,7 +1,7 @@
 import React from 'react';
 import { DollarSign, Wallet, TrendingUp, PiggyBank, Calendar, ShoppingCart, Package } from 'lucide-react';
 import StatCard from './StatCard';
-import { formatCLP } from './Utils/storage';
+import { formatCLP } from '../Utils/storage';
 
 const VistaResumen = ({ 
   totales, 
