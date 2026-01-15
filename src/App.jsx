@@ -12,6 +12,7 @@ import VistaGastos from './Components/VistaGastos';
 import VistaProyeccion from './Components/VistaProyeccion';
 import VistaCronograma from './Components/VistaCronograma';
 import VistaTasas from './Components/VistaTasas';
+import { storage } from './utils/storage';
 
 
 // Importar utilidades
