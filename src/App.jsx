@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Menu } from 'lucide-react';
 
 // Importar componentes
+<<<<<<< HEAD
 import Login from './components/Login';
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';
@@ -15,6 +16,19 @@ import VistaTasas from './components/VistaTasas';
 
 // Importar utilidades
 import { storage, calcularInteres } from './utils/storage';
+=======
+import Login from './Components/Login';
+import Header from './Components/Header';
+import Sidebar from './Components/Sidebar';
+import PetShop from './Components/PetShop';
+import VistaResumen from './Components/VistaResumen';
+import VistaActivos from './Components/VistaActivos';
+import VistaGastos from './Components/VistaGastos';
+import VistaProyeccion from './Components/VistaProyeccion';
+import VistaCronograma from './Components/VistaCronograma';
+import VistaTasas from './Components/VistaTasas';
+import { storage, calcularInteres } from './Utils/storage';
+>>>>>>> 79e13b89a1fe42bc5a4265be8261006ecd72cb6a
 
 function App() {
   // Estado de autenticación

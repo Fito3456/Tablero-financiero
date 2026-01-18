@@ -1,6 +1,6 @@
 import React from 'react';
 import { ShoppingCart, Calendar } from 'lucide-react';
-import { storage, formatCLP } from '../utils/storage';
+import { storage, formatCLP } from '../Utils/storage';
 
 const VistaGastos = ({ gastosUniversidad, setGastosUniversidad }) => {
   // Generar meses de 2026 a 2031
