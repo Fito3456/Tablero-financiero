@@ -1,7 +1,7 @@
 import React from 'react';
 import { DollarSign, X, BarChart3, Package, Wallet, ShoppingCart, Target, Calendar, Edit2 } from 'lucide-react';
 
-const Sidebar = ({ vistaActual, onCambiarVista, isMobileOpen, setIsMobileOpen }) => {
+const Sidebar = ({ vistaActual, onCambiarVista, isMobileOpen, setIsMobileOpen, usuario, onCerrarSesion }) => {
   const vistas = [
     { id: 'resumen', icon: BarChart3, label: 'Resumen', color: 'from-emerald-500 to-green-500' },
     { id: 'petshop', icon: Package, label: 'PetShop', color: 'from-pink-500 to-rose-500' },
@@ -97,11 +97,20 @@ const Sidebar = ({ vistaActual, onCambiarVista, isMobileOpen, setIsMobileOpen })
           </nav>
 
           {/* Footer del Sidebar */}
-          <div className="mt-auto pt-6 border-t border-emerald-500/20">
+{/* Footer del Sidebar */}
+          <div className="mt-auto pt-6 border-t border-emerald-500/20 space-y-3">
             <div className="bg-gradient-to-br from-emerald-500/20 to-green-500/20 rounded-xl p-4 border border-emerald-500/30">
               <p className="text-emerald-300 text-xs font-semibold mb-1">✅ Sistema Activo</p>
-              <p className="text-white/70 text-xs">Guardado automático</p>
+              <p className="text-white/70 text-xs">Sincronización en tiempo real</p>
+              <p className="text-emerald-400 text-xs mt-1">Usuario: {usuario}</p>
             </div>
+            
+            <button
+              onClick={onCerrarSesion}
+              className="w-full px-4 py-3 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white rounded-xl font-semibold transition-all shadow-lg hover:shadow-xl transform hover:scale-105"
+            >
+              🚪 Cerrar Sesión
+            </button>
           </div>
         </div>
       </div>

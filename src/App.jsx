@@ -13,22 +13,21 @@ import VistaProyeccion from './components/VistaProyeccion';
 import VistaCronograma from './components/VistaCronograma';
 import VistaTasas from './components/VistaTasas';
 
-// Importar utilidades (SOLO UNA VEZ)
+// Importar utilidades
 import { storage, calcularInteres } from './utils/storage';
 
 function App() {
   // Estado de autenticación
   const [autenticado, setAutenticado] = useState(false);
   const [usuario, setUsuario] = useState('');
+  const [cargandoDatos, setCargandoDatos] = useState(true);
   
   // Estado de navegación
   const [vistaActual, setVistaActual] = useState(() => {
-    // Cargar la vista guardada o usar 'resumen' por defecto
     return localStorage.getItem('vista-actual') || 'resumen';
   });
   const [isMobileOpen, setIsMobileOpen] = useState(false);
-  const [cargandoDatos, setCargandoDatos] = useState(true);
-
+  
   // Tasas de interés
   const [tasaRacional, setTasaRacional] = useState(0.09);
   const [tasaTenpo, setTasaTenpo] = useState(0.09);
@@ -43,22 +42,52 @@ function App() {
   const [dolarReal, setDolarReal] = useState(883);
   const [ventasPetShop, setVentasPetShop] = useState(0);
 
+  // Verificar sesión guardada al cargar
+  useEffect(() => {
+    const verificarSesion = async () => {
+      const sesionGuardada = localStorage.getItem('finanzapp-sesion');
+      if (sesionGuardada) {
+        try {
+          const { usuario: usuarioGuardado, timestamp } = JSON.parse(sesionGuardada);
+          const diasTranscurridos = (Date.now() - timestamp) / (1000 * 60 * 60 * 24);
+          if (diasTranscurridos < 30) {
+            setUsuario(usuarioGuardado);
+            setAutenticado(true);
+          } else {
+            localStorage.removeItem('finanzapp-sesion');
+          }
+        } catch (error) {
+          localStorage.removeItem('finanzapp-sesion');
+        }
+      }
+      setCargandoDatos(false);
+    };
+    
+    verificarSesion();
+  }, []);
+
   // Cargar datos al iniciar
   useEffect(() => {
-    cargarDatosIniciales();
-  }, []);
+    if (autenticado) {
+      cargarDatosIniciales();
+    }
+  }, [autenticado]);
 
   // Cargar ventas del PetShop
   useEffect(() => {
-    cargarVentasPetShop();
-  }, []);
+    if (autenticado) {
+      cargarVentasPetShop();
+    }
+  }, [autenticado]);
 
   // Actualizar dólar automáticamente
   useEffect(() => {
-    obtenerDolarReal();
-    const interval = setInterval(obtenerDolarReal, 300000); // Cada 5 minutos
-    return () => clearInterval(interval);
-  }, []);
+    if (autenticado) {
+      obtenerDolarReal();
+      const interval = setInterval(obtenerDolarReal, 300000); // Cada 5 minutos
+      return () => clearInterval(interval);
+    }
+  }, [autenticado]);
 
   const cargarDatosIniciales = async () => {
     try {
@@ -90,13 +119,15 @@ function App() {
       if (aportesData) {
         setAportes(JSON.parse(aportesData.value));
       } else {
-        setAportes(generarAportesIniciales());
+        const aportesIniciales = generarAportesIniciales();
+        setAportes(aportesIniciales);
+        await storage.set('aportes-cronograma', JSON.stringify(aportesIniciales), true);
       }
     } catch (error) {
       console.log('Usando valores por defecto');
-      setAportes(generarAportesIniciales());
+      const aportesIniciales = generarAportesIniciales();
+      setAportes(aportesIniciales);
     }
-    setCargandoDatos(false);
   };
 
   const cargarVentasPetShop = async () => {
@@ -210,31 +241,79 @@ function App() {
     return { total, mesesGastados };
   };
 
+  const handleLogin = (user, recordar) => {
+    setUsuario(user);
+    setAutenticado(true);
+    
+    if (recordar) {
+      localStorage.setItem('finanzapp-sesion', JSON.stringify({
+        usuario: user,
+        timestamp: Date.now()
+      }));
+    }
+  };
+
+  const handleCerrarSesion = () => {
+    if (window.confirm('¿Estás seguro de cerrar sesión?')) {
+      setAutenticado(false);
+      setUsuario('');
+      localStorage.removeItem('finanzapp-sesion');
+    }
+  };
+
+  const actualizarDatosCompartidos = async () => {
+    try {
+      // Recargar ventas PetShop
+      const ventasTotal = await storage.get('ventas-total', true);
+      if (ventasTotal) {
+        setVentasPetShop(parseFloat(ventasTotal.value) || 0);
+      }
+
+      // Recargar meses completados
+      const mesesData = await storage.get('meses-completados', true);
+      if (mesesData) {
+        setMesesCompletados(new Set(JSON.parse(mesesData.value)));
+      }
+    
+      // Recargar gastos
+      const gastosData = await storage.get('gastos-universidad', true);
+      if (gastosData) {
+        setGastosUniversidad(JSON.parse(gastosData.value));
+      }
+
+      // Recargar aportes
+      const aportesData = await storage.get('aportes-cronograma', true);
+      if (aportesData) {
+        setAportes(JSON.parse(aportesData.value));
+      }
+    } catch (error) {
+      console.log('Error actualizando datos:', error);
+    }
+  };
+
   const totales = calcularTotales();
   const gastosAnuales = calcularGastosAnuales();
   const ganancia = totales.valorActual - totales.invertido;
   const rentabilidad = totales.invertido > 0 ? ((ganancia / totales.invertido) * 100).toFixed(2) : 0;
 
-  const handleLogin = (user) => {
-    setUsuario(user);
-    setAutenticado(true);
-  };
-
+  // Pantalla de carga mientras verifica sesión
   if (cargandoDatos) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-emerald-950 via-green-950 to-teal-950 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-emerald-400 mx-auto mb-4"></div>
-          <p className="text-white text-xl">Cargando datos...</p>
+          <p className="text-white text-xl">Verificando sesión...</p>
         </div>
       </div>
     );
   }
 
+  // Pantalla de login si no está autenticado
   if (!autenticado) {
     return <Login onLogin={handleLogin} />;
   }
 
+  // Aplicación principal
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-950 via-green-950 to-teal-950 flex">
       {/* Sidebar */}
@@ -243,6 +322,8 @@ function App() {
         onCambiarVista={setVistaActual}
         isMobileOpen={isMobileOpen}
         setIsMobileOpen={setIsMobileOpen}
+        usuario={usuario}
+        onCerrarSesion={handleCerrarSesion}
       />
 
       {/* Contenido Principal */}
@@ -268,6 +349,7 @@ function App() {
                 dolarReal={dolarReal}
                 actualizarDolar={obtenerDolarReal}
                 ventasPetShop={ventasPetShop}
+                onActualizarDatos={actualizarDatosCompartidos}
               />
             )}
 
@@ -315,7 +397,7 @@ function App() {
             <div className="mt-8 text-center text-emerald-300 text-sm">
               <p>💰 Sistema automático • Actualización en tiempo real</p>
               <p className="mt-2">Chile 🇨🇱 • 2026-2032</p>
-              <p className="mt-2 text-emerald-400">✅ Guardado automático • Usuario: {usuario}</p>
+              <p className="mt-2 text-emerald-400">✅ Sincronizado • Usuario: {usuario}</p>
             </div>
           </div>
         </div>

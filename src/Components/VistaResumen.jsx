@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { DollarSign, Wallet, TrendingUp, PiggyBank, Calendar, ShoppingCart, Package } from 'lucide-react';
 import StatCard from './StatCard';
 import { formatCLP } from '../utils/storage';
@@ -10,12 +10,46 @@ const VistaResumen = ({
   gastosAnuales, 
   dolarReal, 
   actualizarDolar,
-  ventasPetShop 
+  ventasPetShop,
+  onActualizarDatos
 }) => {
+  const [ultimaActualizacion, setUltimaActualizacion] = useState(new Date());
+
+  // Sincronizar datos cada 3 segundos
+  useEffect(() => {
+    const interval = setInterval(() => {
+      onActualizarDatos();
+      setUltimaActualizacion(new Date());
+    }, 3000);
+    
+    return () => clearInterval(interval);
+  }, [onActualizarDatos]);
+
   const gananciaTotalConVentas = ganancia + ventasPetShop;
 
   return (
     <>
+      {/* Banner de Sincronización */}
+      <div className="bg-gradient-to-r from-emerald-500/20 to-green-500/20 rounded-2xl p-4 border border-emerald-400/30 mb-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+            <div>
+              <p className="text-white font-bold">🔄 Sincronización Activa</p>
+              <p className="text-emerald-200 text-xs">
+                Última actualización: {ultimaActualizacion.toLocaleTimeString('es-CL')}
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={onActualizarDatos}
+            className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-semibold text-sm transition-all transform hover:scale-105"
+          >
+            🔄 Actualizar
+          </button>
+        </div>
+      </div>
+
       {/* Indicadores Dólar y PetShop */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
         <StatCard
@@ -83,6 +117,13 @@ const VistaResumen = ({
             gradient="from-orange-500 to-red-600"
           />
         </div>
+      </div>
+
+      {/* Info adicional */}
+      <div className="bg-gradient-to-r from-cyan-600/20 to-teal-600/20 rounded-xl p-4 border border-cyan-500/30">
+        <p className="text-white text-sm text-center">
+          💡 Los datos se sincronizan automáticamente entre todos los dispositivos cada 3 segundos
+        </p>
       </div>
     </>
   );

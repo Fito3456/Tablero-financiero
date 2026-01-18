@@ -7,8 +7,10 @@ const PetShop = () => {
   const [ventas, setVentas] = useState([]);
   const [ventasTotal, setVentasTotal] = useState(0);
 
-  useEffect(() => {
+useEffect(() => {
     cargarVentas();
+    const interval = setInterval(cargarVentas, 3000);
+    return () => clearInterval(interval);
   }, []);
 
   const cargarVentas = async () => {
@@ -138,7 +140,7 @@ const PetShop = () => {
         <div className="flex gap-4">
           <div className="flex-1 bg-gradient-to-r from-green-600/20 to-emerald-600/20 rounded-xl p-4 border border-green-500/30">
             <p className="text-white text-sm">
-              💡 Las ventas se suman automáticamente a tu Ganancia Neta en el Resumen
+              💡 Las ventas se sincronizan automáticamente en todos los dispositivos
             </p>
           </div>
           
